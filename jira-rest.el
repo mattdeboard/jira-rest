@@ -148,7 +148,7 @@ Requires JIRA 5.0 or greater.
 
 (defun jira-rest-create-ticket (project summary description issuetype)
   "File a new ticket with JIRA."
-  (interactive (list (read-string "Project: ")
+  (interactive (list (read-string "Project Key: ")
                      (read-string "Summary: ")
                      (read-string "Description: ")
                      (read-string "Issue Type: ")))
@@ -160,7 +160,7 @@ Requires JIRA 5.0 or greater.
     ;; Create the JSON string that will be passed to create the ticket.
     (progn
       (setq ticket-alist (cons :fields
-                               (list (cons :project project)
+                               (list (cons :project (cons :key project))
                                      (cons :summary summary)
                                      (cons :description description)
                                      (cons :issuetype
