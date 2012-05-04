@@ -157,13 +157,16 @@ Requires JIRA 5.0 or greater.
           (equal description "")
           (equal issuetype ""))
       (message "Must provide all information!")
+    ;; Create the JSON string that will be passed to create the ticket.
     (progn
-      (setq ticket-alist (list (cons :project project)
-                               (cons :summary summary)
-                               (cons :description description)
-                               (cons :issuetype
-                                     (cond
-                                      ((equal 0 (string-to-number
-                                                 issuetype))
-                                       (cons :id issuetype))
-                                      (t (cons :name issuetype)))))))))
+      (setq ticket-alist (cons :fields
+                               (list (cons :project project)
+                                     (cons :summary summary)
+                                     (cons :description description)
+                                     (cons :issuetype
+                                           (cond
+                                            ((equal 0 (string-to-number
+                                                       issuetype))
+                                             (cons :id issuetype))
+                                            (t (cons :name issuetype))))))))))
+  
