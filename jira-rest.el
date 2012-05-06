@@ -144,7 +144,6 @@ Requires JIRA 5.0 or greater.
   (interactive)
   (jira-rest-logout)
   (kill-buffer "*JIRA-REST*"))
-(json-encode '(:1 2))
 
 (defun id-or (s)
   "Return ':id' if 's' is a numeric string. Otherwise, return
@@ -153,7 +152,7 @@ and 'issuetype' keys to be either 'id' or some other value (in the
 case of 'project', the other is 'key'; for 'issuetype', 'name'). This fn
 enables us to allow either type of user input."
   (if (not (equal 0 (string-to-number s)))
-      :id))
+      "id"))
 
 (defun jira-rest-create-ticket (project summary description issuetype)
   "File a new ticket with JIRA."
@@ -166,13 +165,22 @@ enables us to allow either type of user input."
           (equal description "")
           (equal issuetype ""))
       (message "Must provide all information!")
-    ;; Create the JSON string that will be passed to create the ticket.
-    (progn
-      (setq ticket-alist
-            (cons :fields
-                  (list (cons :project (cons (or (id-or project) :key) project))
-                        (cons :summary summary)
-                        (cons :description description)
-                        (cons :issuetype (cons (or (id-or issuetype) :name)
-                                               issuetype))))))))
-  
+    (let ((field-hash (make-hash-table :test 'equal))
+          (issue-hash (make-hash-table :test 'equal))
+          (project-hash (make-hash-table :test 'equal))
+          (issuetype-hash (make-hash-table :test 'equal)))
+      ;; Create the JSON string that will be passed to create the ticket.
+      (progn
+        ;; Populate our hashes, from bottom to top. The format for these
+        ;; nested hash tables follow the format outlined in the JIRA REST
+        ;; API documentation.
+        (puthash (or (id-or project) "key") project project-hash)
+        (puthash (or (id-or issuetype) "name") issuetype issuetype-hash)
+        (puthash "project" project-hash issue-hash)
+        (puthash "issuetype" issuetype-hash issue-hash)
+        (puthash "summary" summary issue-hash)
+        (puthash "description" description issue-hash)
+        (puthash "fields" issue-hash field-hash)
+        ;; Return the JSON-encoded hash map.
+        (message (json-encode field-hash))))))
+
