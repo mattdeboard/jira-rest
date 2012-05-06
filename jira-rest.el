@@ -103,7 +103,7 @@ see URL https://developer.atlassian.com/display/JIRADEV/JIRA+REST+API+Example+-+
     (define-key jira-rest-mode-map "si" 'jira-rest-search-issues)
     (define-key jira-rest-mode-map "sp" 'jira-rest-search-project-issues)
     (define-key jira-rest-mode-map "i" 'jira-rest-show-issue)
-    (define-key jira-rest-mode-map "c" 'jira-rest-create-ticket)
+    (define-key jira-rest-mode-map "c" 'jira-rest-create-issue)
     (define-key jira-rest-mode-map "o" 'jira-rest-comment-ticket)
     (define-key jira-rest-mode-map "r" 'jira-rest-refresh-ticket)
     (define-key jira-rest-mode-map "a" 'jira-rest-assign-ticket)
@@ -160,15 +160,19 @@ Requires JIRA 5.0 or greater.
 (defvar jira-rest-user-fullnames nil
   "This holds a list of user fullnames.")
 
-(defun url-post (data)
+(defun jira-rest-api-interact (method data &optional path)
+  "Interact with the API using method 'method' and data 'data'.
+Optional arg 'path' may be provided to specify another location further
+down the URL structure to send the request."
   (if (not jira-rest-auth-info)
       (message "You must login first, 'M-x jira-rest-login'.")
-    (let ((url-request-method "POST")
+    (let ((url-request-method method)
           (url-request-extra-headers
            `(("Content-Type" . "application/json")
              ("Authorization" . ,jira-rest-auth-info)))
-          (url-request-data data))
-      (url-retrieve jira-rest-endpoint 'my-switch-to-url-buffer))))
+          (url-request-data data)
+          (target (concat jira-rest-endpoint path)))
+      (url-retrieve target 'my-switch-to-url-buffer))))
 
 (defun my-switch-to-url-buffer (status)
   (switch-to-buffer (current-buffer)))
@@ -187,8 +191,8 @@ enables us to allow either type of user input."
   (if (not (equal 0 (string-to-number s)))
       "id"))
 
-(defun jira-rest-create-ticket (project summary description issuetype)
-  "File a new ticket with JIRA."
+(defun jira-rest-create-issue (project summary description issuetype)
+  "File a new issue with JIRA."
   (interactive (list (read-string "Project Key: ")
                      (read-string "Summary: ")
                      (read-string "Description: ")
@@ -215,5 +219,10 @@ enables us to allow either type of user input."
         (puthash "description" description issue-hash)
         (puthash "fields" issue-hash field-hash)
         ;; Return the JSON-encoded hash map.
-        (url-post (json-encode field-hash))))))
+        (jira-rest-api-interact "POST" (json-encode field-hash))))))
+
+(defun jira-rest-delete-issue (k)
+  "Delete an issue with unique identifier 'k'. 'k' is either an
+issueId or key."
+  (jira-rest-api-interact "DELETE" nil k))
 
