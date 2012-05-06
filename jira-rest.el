@@ -18,7 +18,6 @@
 ;; JIRA REST Mode - By Matt DeBoard
 ;; ********************************
 
-
 (defgroup jira-rest nil
   "JIRA customization group."
   :group 'applications)
@@ -31,11 +30,17 @@
   "The auth header used to authenticate each request. Please
 see URL https://developer.atlassian.com/display/JIRADEV/JIRA+REST+API+Example+-+Basic+AuthenticationConsists for more information.")
 
-(defun jira-rest-login (username password)
-  (interactive (list (read-string "Username: ")
-                     (read-passwd "Password: ")))
-  (let ((enc (base64-encode-string (concat username ":" password))))
-    (setq jira-rest-auth-info (concat "Basic " enc))))
+(defun load-auth-info ()
+  (let ((jira-pwd-file (expand-file-name "~/.jira-auth-info.el")))
+    (when (file-regular-p jira-pwd-file)
+      (load jira-pwd-file))))
+    
+(defun jira-rest-login ()
+  (progn
+    (load-auth-info)
+    (let ((enc (base64-encode-string (concat jira-username ":" jira-password))))
+      (setq jira-rest-auth-info (concat "Basic " enc)))
+    nil))
 
 (defun jira-rest-logout ()
   "Logs the user out of JIRA."
