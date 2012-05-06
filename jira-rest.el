@@ -6,9 +6,13 @@
 ;; influenced by jira.el, the work of Brian Zwahr and Dave Benjamin:
 ;; http://emacswiki.org/emacs/JiraMode
 
+;; Documentation of JIRA REST API can be found at URL:
+;; https://developer.atlassian.com/display/JIRADEV/JIRA+REST+APIs
+
 ;;; Code:
 (require 'cl)
 (require 'json)
+(require 'url)
 
 ;; ********************************
 ;; JIRA REST Mode - By Matt DeBoard
@@ -22,6 +26,16 @@
 (defgroup jira-rest-faces nil
   "Faces for displaying JIRA information."
   :group 'jira)
+
+(defvar jira-rest-auth-info nil
+  "The auth header used to authenticate each request. Please
+see URL https://developer.atlassian.com/display/JIRADEV/JIRA+REST+API+Example+-+Basic+AuthenticationConsists for more information.")
+
+(defun jira-rest-login (username password)
+  (interactive (list (read-string "Username: ")
+                     (read-passwd "Password: ")))
+  (let ((enc (base64-encode-string (concat username ":" password))))
+    (setq jira-rest-auth-info (concat "Basic " enc))))
 
 (defcustom jira-rest-endpoint ""
   "The URL of the REST API endpoint for user's JIRA
@@ -115,10 +129,10 @@ Requires JIRA 5.0 or greater.
       (setq mode-name "JIRA-REST")
       (use-local-map jira-rest-mode-map)
       (run-hooks 'jira-rest-mode-hook)
-      (jira-rest-store-projects)
-      (jira-rest-store-priorities)
-      (jira-rest-store-statuses)
-      (jira-rest-store-types)
+      ;; (jira-rest-store-projects)
+      ;; (jira-rest-store-priorities)
+      ;; (jira-rest-store-statuses)
+      ;; (jira-rest-store-types)
       (insert "Welcome to jira-rest-mode!")
       (message "jira rest mode loaded!"))))
 
@@ -139,6 +153,17 @@ Requires JIRA 5.0 or greater.
 
 (defvar jira-rest-user-fullnames nil
   "This holds a list of user fullnames.")
+
+(defun url-post (data)
+  (let ((url-request-method "POST")
+        (url-request-extra-headers
+         '(("Content-Type" . "application/json")
+           ("Authorization" . jira-rest-auth-info)))
+        (url-request-data data))
+    (url-retrieve jira-rest-endpoint 'my-switch-to-url-buffer)))
+
+(defun my-switch-to-url-buffer (status)
+  (switch-to-buffer (current-buffer)))
 
 (defun jira-rest-mode-quit ()
   (interactive)
@@ -182,5 +207,5 @@ enables us to allow either type of user input."
         (puthash "description" description issue-hash)
         (puthash "fields" issue-hash field-hash)
         ;; Return the JSON-encoded hash map.
-        (message (json-encode field-hash))))))
+        (url-post (json-encode field-hash))))))
 
