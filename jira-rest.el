@@ -226,3 +226,7 @@ enables us to allow either type of user input."
 issueId or key."
   (jira-rest-api-interact "DELETE" nil k))
 
+(defun jira-rest-get-watchers (k)
+  "Get all the watchers for an issue."
+  (jira-rest-api-interact "GET" nil (concat k "/watchers")))
+
