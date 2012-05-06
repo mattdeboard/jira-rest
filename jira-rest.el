@@ -18,7 +18,6 @@
 ;; JIRA REST Mode - By Matt DeBoard
 ;; ********************************
 
-
 (defgroup jira-rest nil
   "JIRA customization group."
   :group 'applications)
@@ -31,16 +30,17 @@
   "The auth header used to authenticate each request. Please
 see URL https://developer.atlassian.com/display/JIRADEV/JIRA+REST+API+Example+-+Basic+AuthenticationConsists for more information.")
 
-(defun jira-rest-login (username password)
-  (interactive (list (read-string "Username: ")
-                     (read-passwd "Password: ")))
-  (let ((enc (base64-encode-string (concat username ":" password))))
-    (setq jira-rest-auth-info (concat "Basic " enc))))
+(defun load-auth-info ()
+  (let ((jira-pwd-file (expand-file-name "~/.jira-auth-info.el")))
+    (if (file-regular-p jira-pwd-file)
+        (load jira-pwd-file))))
 
-(defun jira-rest-logout ()
-  "Logs the user out of JIRA."
-  (interactive)
-  (setq jira-rest-auth-info nil))
+(defun jira-rest-login ()
+  (if (load-auth-info)
+      (let ((enc (base64-encode-string
+                  (concat jira-username ":" jira-password))))
+        (setq jira-rest-auth-info (concat "Basic " enc)))
+    (message "You must provide your login information.")))
 
 (defcustom jira-rest-endpoint ""
   "The URL of the REST API endpoint for user's JIRA
@@ -129,6 +129,7 @@ Requires JIRA 5.0 or greater.
  customize-variable RET jira-rest-endpoint RET'!")
     (progn
       (switch-to-buffer "*JIRA-REST*")
+      (jira-rest-login)
       (kill-all-local-variables)
       (setq major-mode 'jira-rest-mode)
       (setq mode-name "JIRA-REST")
