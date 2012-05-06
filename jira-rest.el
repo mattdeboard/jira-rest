@@ -146,6 +146,15 @@ Requires JIRA 5.0 or greater.
   (kill-buffer "*JIRA-REST*"))
 (json-encode '(:1 2))
 
+(defun id-or (s)
+  "Return ':id' if 's' is a numeric string. Otherwise, return
+nil. The idea here is that the JIRA REST API spec allows the 'project'
+and 'issuetype' keys to be either 'id' or some other value (in the
+case of 'project', the other is 'key'; for 'issuetype', 'name'). This fn
+enables us to allow either type of user input."
+  (if (not (equal 0 (string-to-number s)))
+      :id))
+
 (defun jira-rest-create-ticket (project summary description issuetype)
   "File a new ticket with JIRA."
   (interactive (list (read-string "Project Key: ")
@@ -159,14 +168,11 @@ Requires JIRA 5.0 or greater.
       (message "Must provide all information!")
     ;; Create the JSON string that will be passed to create the ticket.
     (progn
-      (setq ticket-alist (cons :fields
-                               (list (cons :project (cons :key project))
-                                     (cons :summary summary)
-                                     (cons :description description)
-                                     (cons :issuetype
-                                           (cond
-                                            ((equal 0 (string-to-number
-                                                       issuetype))
-                                             (cons :id issuetype))
-                                            (t (cons :name issuetype))))))))))
+      (setq ticket-alist
+            (cons :fields
+                  (list (cons :project (cons (or (id-or project) :key) project))
+                        (cons :summary summary)
+                        (cons :description description)
+                        (cons :issuetype (cons (or (id-or issuetype) :name)
+                                               issuetype))))))))
   
