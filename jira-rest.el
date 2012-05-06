@@ -217,5 +217,3 @@ enables us to allow either type of user input."
         ;; Return the JSON-encoded hash map.
         (url-post (json-encode field-hash))))))
 
-
-
