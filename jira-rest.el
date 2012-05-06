@@ -37,6 +37,11 @@ see URL https://developer.atlassian.com/display/JIRADEV/JIRA+REST+API+Example+-+
   (let ((enc (base64-encode-string (concat username ":" password))))
     (setq jira-rest-auth-info (concat "Basic " enc))))
 
+(defun jira-rest-logout ()
+  "Logs the user out of JIRA."
+  (interactive)
+  (setq jira-rest-auth-info nil))
+
 (defcustom jira-rest-endpoint ""
   "The URL of the REST API endpoint for user's JIRA
  installation."
@@ -155,12 +160,14 @@ Requires JIRA 5.0 or greater.
   "This holds a list of user fullnames.")
 
 (defun url-post (data)
-  (let ((url-request-method "POST")
-        (url-request-extra-headers
-         '(("Content-Type" . "application/json")
-           ("Authorization" . jira-rest-auth-info)))
-        (url-request-data data))
-    (url-retrieve jira-rest-endpoint 'my-switch-to-url-buffer)))
+  (if (not jira-rest-auth-info)
+      (message "You must login first, 'M-x jira-rest-login'.")
+    (let ((url-request-method "POST")
+          (url-request-extra-headers
+           `(("Content-Type" . "application/json")
+             ("Authorization" . ,jira-rest-auth-info)))
+          (url-request-data data))
+      (url-retrieve jira-rest-endpoint 'my-switch-to-url-buffer))))
 
 (defun my-switch-to-url-buffer (status)
   (switch-to-buffer (current-buffer)))
