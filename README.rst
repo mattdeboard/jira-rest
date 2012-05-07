@@ -13,7 +13,8 @@ To Install & Run
 
 1. Place this file somewhere on your load-path
 2. Add ``(require 'jira-rest)`` to your .emacs/init.el file.
-3. ``M-x jira-rest-mode``
+3. Put ``.jira-auth-info.el`` in your home directory, and set the variables for your authentication information & API endpoint URL.
+4. ``M-x jira-rest-mode``
 
 
 To Do's
