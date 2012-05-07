@@ -244,6 +244,18 @@ issueId or key."
   (interactive (list (read-string "Issue Key or ID: ")))
   (jira-rest-api-interact "GET" nil (concat k "/watchers")))
 
+(defun jira-rest-add-watcher (k name)
+  "Add a watcher to an issue."
+  (interactive (list (read-string "Issue Key or ID: ")
+                     (read-string "Username to Add as Watcher: ")))
+  (jira-rest-api-interact "POST" (json-encode name) (concat k "/watchers")))
+
+(defun jira-rest-remove-watcher (k name)
+  "Remove a watcher from an issue."
+  (interactive (list (read-string "Issue Key or ID: ")
+                     (read-string "Username to Remove as Watcher: ")))
+  (jira-rest-api-interact "DELETE" nil (concat k "/watchers?" name)))
+  
 (defun jira-rest-change-assignee (k &optional name)
   "Change the assignee for an issue."
   (interactive (list (read-string "Issue Key or ID: ")
