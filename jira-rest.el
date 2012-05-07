@@ -114,13 +114,13 @@ Requires JIRA 5.0 or greater.
 
 \\{jira-rest-mode-map}"
   (interactive)
+  (jira-rest-login)
   (if (or (equal jira-rest-endpoint nil)
           (equal jira-rest-endpoint ""))
       (message "jira-rest-endpoint not set! Please set this
 value in .jira-auth-info.el.")
     (progn
       (switch-to-buffer "*JIRA-REST*")
-      (jira-rest-login)
       (kill-all-local-variables)
       (setq major-mode 'jira-rest-mode)
       (setq mode-name "JIRA-REST")
