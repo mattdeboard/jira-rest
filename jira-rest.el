@@ -100,10 +100,10 @@ see URL https://developer.atlassian.com/display/JIRADEV/JIRA+REST+API+Example+-+
     (define-key jira-rest-mode-map "c" 'jira-rest-create-issue)
     (define-key jira-rest-mode-map "di" 'jira-rest-delete-issue)
     (define-key jira-rest-mode-map "a" 'jira-rest-change-assignee)
-    (define-key jira-rest-mode-map "gw" 'jira-rest-get-watchers)
-    (define-key jira-rest-mode-map "aw" 'jira-rest-add-watcher)
-    (define-key jira-rest-mode-map "rw" 'jira-rest-remove-watcher)
-    (define-key jira-rest-mode-map "Q" 'jira-rest-mode-quit)))
+    (define-key jira-rest-mode-map "gg" 'jira-rest-get-watchers)
+    (define-key jira-rest-mode-map "ga" 'jira-rest-add-watcher)
+    (define-key jira-rest-mode-map "gr" 'jira-rest-remove-watcher)
+    (define-key jira-rest-mode-map "\S-q" 'jira-rest-mode-quit)))
 
 (defun jira-rest-mode ()
   "A mode for working with JIRA's JSON REST API. The full
@@ -181,7 +181,6 @@ down the URL structure to send the request."
 
 (defun jira-rest-mode-quit ()
   (interactive)
-  (jira-rest-logout)
   (kill-buffer "*JIRA-REST*"))
 
 (defun id-or (s)
