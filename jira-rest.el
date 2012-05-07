@@ -175,14 +175,14 @@ down the URL structure to send the request."
           (url-request-data data)
           (target (concat jira-rest-endpoint path)))
       (with-current-buffer (current-buffer)
-        (url-retrieve target 'my-switch-to-url-buffer method)))))
+        (url-retrieve target 'my-switch-to-url-buffer `(,method))))))
 
-(defun my-switch-to-url-buffer (status &optional method)
+(defun my-switch-to-url-buffer (status method)
   "Callback function to capture the contents of the response."
   (with-current-buffer (current-buffer)
     ;; Don't try to read the buffer if the method was DELETE,
     ;; since we won't get a response back.
-    (if (equal method "DELETE")
+    (if (not (equal method "DELETE"))
         (let ((data (buffer-substring (search-forward-regexp "^$")
                                       (point-max))))
           (setq response (json-read-from-string data))))
@@ -236,9 +236,11 @@ enables us to allow either type of user input."
 (defun jira-rest-delete-issue (k)
   "Delete an issue with unique identifier 'k'. 'k' is either an
 issueId or key."
+  (interactive (list (read-string "Issue Key or ID: ")))
   (jira-rest-api-interact "DELETE" nil k))
 
 (defun jira-rest-get-watchers (k)
   "Get all the watchers for an issue."
+  (interactive (list (read-string "Issue Key or ID: ")))
   (jira-rest-api-interact "GET" nil (concat k "/watchers")))
   
