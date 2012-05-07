@@ -9,6 +9,8 @@ This project is the result of seeing the state of the original `jira.el <http://
 
 Requires JIRA 5.0+ & `json.el <https://github.com/thorstadt/json.el>`_.
 
+There seem to be several versions of JIRA's API docs floating around, but in my opinion `these <https://developer.atlassian.com/static/rest/jira/5.0.html>`_ are the best.
+
 To Install & Run
 ----------------
 
