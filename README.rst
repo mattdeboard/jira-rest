@@ -12,7 +12,7 @@ Requires JIRA 5.0+ & `json.el <https://github.com/thorstadt/json.el>`_.
 To Install & Run
 ----------------
 
-1. Place this file somewhere on your load-path
+1. Place ``jira-rest.el`` somewhere on your load-path
 2. Add ``(require 'jira-rest)`` to your .emacs/init.el file.
 3. Put ``.jira-auth-info.el`` in your home directory, and set the variables for your authentication information & API endpoint URL.
 4. ``M-x jira-rest-mode``
