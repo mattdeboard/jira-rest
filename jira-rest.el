@@ -97,22 +97,13 @@ see URL https://developer.atlassian.com/display/JIRADEV/JIRA+REST+API+Example+-+
     nil
   (progn
     (setq jira-rest-mode-map (make-sparse-keymap))
-    (define-key jira-rest-mode-map "li" 'jira-rest-list-issues)
-    (define-key jira-rest-mode-map "lp" 'jira-rest-list-projects)
-    (define-key jira-rest-mode-map "lf" 'jira-rest-list-filters)
-    (define-key jira-rest-mode-map "si" 'jira-rest-search-issues)
-    (define-key jira-rest-mode-map "sp" 'jira-rest-search-project-issues)
-    (define-key jira-rest-mode-map "i" 'jira-rest-show-issue)
     (define-key jira-rest-mode-map "c" 'jira-rest-create-issue)
-    (define-key jira-rest-mode-map "o" 'jira-rest-comment-ticket)
-    (define-key jira-rest-mode-map "r" 'jira-rest-refresh-ticket)
-    (define-key jira-rest-mode-map "a" 'jira-rest-assign-ticket)
-    (define-key jira-rest-mode-map "n" 'jira-rest-next-comment)
-    (define-key jira-rest-mode-map "p" 'jira-rest-previous-comment)
-    (define-key jira-rest-mode-map "jl" 'jira-rest-login)
-    (define-key jira-rest-mode-map "jL" 'jira-rest-logout)
-    (define-key jira-rest-mode-map "Q" 'jira-rest-mode-quit)
-    (define-key jira-rest-mode-map [return] 'jira-rest-return)))
+    (define-key jira-rest-mode-map "di" 'jira-rest-delete-issue)
+    (define-key jira-rest-mode-map "a" 'jira-rest-change-assignee)
+    (define-key jira-rest-mode-map "gw" 'jira-rest-get-watchers)
+    (define-key jira-rest-mode-map "aw" 'jira-rest-add-watcher)
+    (define-key jira-rest-mode-map "rw" 'jira-rest-remove-watcher)
+    (define-key jira-rest-mode-map "Q" 'jira-rest-mode-quit)))
 
 (defun jira-rest-mode ()
   "A mode for working with JIRA's JSON REST API. The full
@@ -266,3 +257,5 @@ issueId or key."
       (jira-rest-api-interact "PUT" (json-encode name-hash)
                               (concat k "/assignee")))))
 
+(provide 'jira-rest)
+;;; jira-rest.el ends here
