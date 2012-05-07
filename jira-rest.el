@@ -92,7 +92,7 @@ see URL https://developer.atlassian.com/display/JIRADEV/JIRA+REST+API+Example+-+
 (defvar jira-rest-mode-hook nil)
 
 (defvar jira-rest-mode-map nil)
-  
+
 (if jira-rest-mode-map
     nil
   (progn
@@ -160,6 +160,8 @@ Requires JIRA 5.0 or greater.
 (defvar jira-rest-user-fullnames nil
   "This holds a list of user fullnames.")
 
+(defvar response nil)
+
 (defun jira-rest-api-interact (method data &optional path)
   "Interact with the API using method 'method' and data 'data'.
 Optional arg 'path' may be provided to specify another location further
@@ -172,10 +174,19 @@ down the URL structure to send the request."
              ("Authorization" . ,jira-rest-auth-info)))
           (url-request-data data)
           (target (concat jira-rest-endpoint path)))
-      (url-retrieve target 'my-switch-to-url-buffer))))
+      (with-current-buffer (current-buffer)
+        (url-retrieve target 'my-switch-to-url-buffer method)))))
 
-(defun my-switch-to-url-buffer (status)
-  (switch-to-buffer (current-buffer)))
+(defun my-switch-to-url-buffer (status &optional method)
+  "Callback function to capture the contents of the response."
+  (with-current-buffer (current-buffer)
+    ;; Don't try to read the buffer if the method was DELETE,
+    ;; since we won't get a response back.
+    (if (equal method "DELETE")
+        (let ((data (buffer-substring (search-forward-regexp "^$")
+                                      (point-max))))
+          (setq response (json-read-from-string data))))
+    (kill-buffer (current-buffer))))
 
 (defun jira-rest-mode-quit ()
   (interactive)
@@ -219,7 +230,8 @@ enables us to allow either type of user input."
         (puthash "description" description issue-hash)
         (puthash "fields" issue-hash field-hash)
         ;; Return the JSON-encoded hash map.
-        (jira-rest-api-interact "POST" (json-encode field-hash))))))
+        (jira-rest-api-interact "POST" (json-encode field-hash))
+        response))))
 
 (defun jira-rest-delete-issue (k)
   "Delete an issue with unique identifier 'k'. 'k' is either an
@@ -229,4 +241,4 @@ issueId or key."
 (defun jira-rest-get-watchers (k)
   "Get all the watchers for an issue."
   (jira-rest-api-interact "GET" nil (concat k "/watchers")))
-
+  
