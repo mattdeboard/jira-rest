@@ -223,6 +223,16 @@ enables us to allow either type of user input."
         (jira-rest-api-interact "POST" (json-encode field-hash))
         response))))
 
+(defun jira-rest-get-issue (k &optional fields)
+  "Fetch the data for a single issue identified by 'k'. Optional
+comma-separated fields 'fields' can be passed to limit what fields are returned
+ in the results."
+  (interactive (list (read-string "Issue Key or ID: ")
+                     (read-string "Comma-separated Fields to Include: ")))
+  (jira-rest-api-interact "GET" nil (if fields
+                                        (concat k "?fields" fields)
+                                      k)))
+
 (defun jira-rest-delete-issue (k)
   "Delete an issue with unique identifier 'k'. 'k' is either an
 issueId or key."
