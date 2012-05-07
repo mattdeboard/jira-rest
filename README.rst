@@ -27,6 +27,7 @@ High-priority tasks:
 * Add automated tests with ERT
 * Implement issue search
 * Adding/removing/editing comments
+* Modifying issues (as supported by the API)
 
 Obviously implementing functions to consume every possible API endpoint is a to-do, but priority will likely go to those that get the most use.
 
