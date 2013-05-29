@@ -5,6 +5,8 @@ jira-rest.el
 An Emacs major mode for interfacing with JIRA's REST API
 ========================================================
 
+**Update**: I no longer use Jira (and haven't for about a year now) so this project should be considered unmaintained.
+
 This project is the result of seeing the state of the original `jira.el <http://emacswiki.org/emacs/jira.el>`_. Atlassian's JIRA API docs `state quite clearly <https://developer.atlassian.com/display/JIRADEV/JIRA+Remote+API+Reference>`_ that the REST API unveiled for JIRA 5.0 is the only version that will be receiving development efforts going forward. Unfortunately, ``jira.el`` uses the XML RPC. So in the interest of scratching my own itch I started work on this.
 
 Requires JIRA 5.0+ & `json.el <https://github.com/thorstadt/json.el>`_.
